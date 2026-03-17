@@ -65,8 +65,8 @@ class BudgetAllocationController extends Controller
      */
     public function create(Request $request): View
     {
-        if (!$request->user()->hasAnyRole(['director', 'super_admin'])) {
-            abort(403, 'Seuls les directeurs peuvent allouer des budgets.');
+        if (!$request->user()->can('create', BudgetAllocation::class)) {
+            abort(403, 'Seul le Directeur peut allouer des budgets aux départements.');
         }
 
         $budgets = Budget::where('status', 'active')

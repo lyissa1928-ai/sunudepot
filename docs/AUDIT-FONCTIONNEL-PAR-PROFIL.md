@@ -12,7 +12,7 @@
 | **Staff**     | Utilisateur terrain (campus)          | Un campus          | `staff`     |
 | **Point focal** | Logistique, commandes, validation     | Global (campus_id null) | `point_focal` |
 | **Directeur** | Pilotage, budgets, administration     | Global             | `director`  |
-| **Super Admin** | Gestion plateforme et utilisateurs   | Global             | `super_admin` |
+| **Super Admin** | Tout sauf allocation de budget       | Global             | `super_admin` |
 
 Un utilisateur est dit *site-scoped* s’il a un `campus_id` (ex. staff). Les rôles point_focal, director et super_admin sont en général sans campus (accès global).
 
@@ -103,17 +103,18 @@ Un utilisateur est dit *site-scoped* s’il a un `campus_id` (ex. staff). Les r�
 ### 2.4 Super Admin (rôle `super_admin`)
 
 **Actions possibles :**
-- Mêmes actions que le directeur (permissions complètes dans le seeder).
-- Gestion des campus et des utilisateurs (y compris désactivation / suppression).
+- **Peut tout faire**, sans limite, **sauf allocation de budget** (création d’allocation, enregistrement de dépense sur allocation, approbation, réconciliation). Ces actions restent réservées au **Directeur**.
+- Gestion des campus, des utilisateurs (création, modification, désactivation, suppression), paramètres de l’application.
+- Consultation des allocations et budgets en lecture (view).
 
 **Informations accessibles :**
-- Identique au directeur.
+- Identique au directeur (vue sur tout, sauf actions d’allocation).
 
 **Menu :**
-- Identique au directeur (même sidebar conditionnelle).
+- Identique au directeur ; le Super Admin ne voit pas / n’a pas accès aux actions d’allocation de budget (policy + permissions).
 
-**Problèmes identifiés :**
-- Aucune incohérence majeure ; rôle « tout faire » par design.
+**Règle métier :**
+- Super Admin = tout sauf allocation de budget (réservée au Directeur).
 
 ---
 

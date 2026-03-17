@@ -50,14 +50,14 @@ class BudgetAllocationPolicy
     /**
      * Determine if user can create allocation (allocate to department)
      *
-     * Director only
+     * Director only. Super Admin ne peut pas allouer de budget.
      *
      * @param User $user
      * @return bool
      */
     public function create(User $user): bool
     {
-        return $user->hasAnyRole(['director', 'super_admin']) && $user->can('budget_allocation.create');
+        return $user->hasRole('director') && $user->can('budget_allocation.create');
     }
 
     /**
@@ -76,8 +76,8 @@ class BudgetAllocationPolicy
             return false;
         }
 
-        // Director can record against any
-        if ($user->hasAnyRole(['director', 'super_admin'])) {
+        // Director can record against any (Super Admin n'a pas la permission record_expense)
+        if ($user->hasRole('director')) {
             return true;
         }
 
@@ -118,8 +118,8 @@ class BudgetAllocationPolicy
             return false;
         }
 
-        // Director can approve any
-        if ($user->hasAnyRole(['director', 'super_admin'])) {
+        // Director can approve any (Super Admin n'a pas la permission approve_expense)
+        if ($user->hasRole('director')) {
             return true;
         }
 

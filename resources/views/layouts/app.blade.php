@@ -261,8 +261,10 @@
                     <a href="{{ route('analytics.index') }}" class="sidebar-mini-link {{ Route::is('analytics.*') ? 'active' : '' }}" title="Statistiques"><i class="bi bi-graph-up"></i></a>
                     @endif
                     <a href="{{ route('account.index') }}" class="sidebar-mini-link {{ Route::is('account.*') ? 'active' : '' }}" title="Paramètres"><i class="bi bi-gear"></i></a>
-                    @if (auth()->user()->hasRole('super_admin'))
+                    @if (auth()->user()->hasAnyRole(['super_admin', 'director']))
                     <a href="{{ route('users.index') }}" class="sidebar-mini-link {{ Route::is('users.*') ? 'active' : '' }}" title="Utilisateurs"><i class="bi bi-people"></i></a>
+                    @endif
+                    @if (auth()->user()->hasRole('super_admin'))
                     <a href="{{ route('settings.index') }}" class="sidebar-mini-link {{ Route::is('settings.*') ? 'active' : '' }}" title="Paramètres application"><i class="bi bi-gear-wide-connected"></i></a>
                     @endif
                     <a href="{{ route('guide.index') }}" class="sidebar-mini-link {{ Route::is('guide.*') ? 'active' : '' }}" title="Guide"><i class="bi bi-book"></i></a>
@@ -374,10 +376,12 @@
                     <a href="{{ route('campuses.index') }}" class="nav-link {{ Route::is('campuses.*') ? 'active' : '' }}">
                         <i class="bi bi-building"></i> Campus
                     </a>
-                    @if (auth()->user()->hasRole('super_admin'))
+                    @if (auth()->user()->hasAnyRole(['super_admin', 'director']))
                     <a href="{{ route('users.index') }}" class="nav-link {{ Route::is('users.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i> Utilisateurs
                     </a>
+                    @endif
+                    @if (auth()->user()->hasRole('super_admin'))
                     <a href="{{ route('settings.index') }}" class="nav-link {{ Route::is('settings.*') ? 'active' : '' }}">
                         <i class="bi bi-gear-wide-connected"></i> Paramètres de l'application
                     </a>

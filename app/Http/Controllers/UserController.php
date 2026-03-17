@@ -14,17 +14,17 @@ use Illuminate\Support\Facades\Storage;
 /**
  * UserController
  *
- * Gestion des comptes utilisateurs (Super Admin uniquement).
+ * Gestion des comptes utilisateurs : Super Admin et Directeur (admin).
  * Création, modification, association campus et rôle (RBAC).
- * Le directeur ne gère pas les utilisateurs.
+ * Les rôles super_admin et director peuvent créer et gérer les utilisateurs.
  */
 class UserController extends Controller
 {
     public function __construct()
     {
         $this->middleware(function ($request, $next) {
-            if (!$request->user()->hasRole('super_admin')) {
-                abort(403, 'Seul le Super Admin peut gérer les utilisateurs.');
+            if (!$request->user()->hasAnyRole(['super_admin', 'director'])) {
+                abort(403, 'Seuls le Super Admin et le Directeur peuvent gérer les utilisateurs.');
             }
             return $next($request);
         });

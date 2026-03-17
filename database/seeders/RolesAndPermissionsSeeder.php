@@ -9,8 +9,9 @@ use Spatie\Permission\Models\Permission;
 /**
  * RolesAndPermissionsSeeder
  *
- * Rôles ESEBAT : super_admin, director, point_focal, staff uniquement.
- * Super Admin gère la plateforme ; ne peut pas créer de Directeur mais peut modifier son compte.
+ * Rôles ESEBAT : super_admin, director, point_focal, staff.
+ * Super Admin : peut tout faire SAUF allocation de budget (réservée au Directeur).
+ * Director : accès complet métier dont allocation de budget.
  * Matricules : Staff = STF + 3 chiffres, Point Focal = PFE + 2 chiffres.
  *
  * Usage: php artisan db:seed --class=RolesAndPermissionsSeeder
@@ -111,18 +112,29 @@ class RolesAndPermissionsSeeder extends Seeder
     {
         $all = array_values($permissions);
 
-        // Super Admin - Gestion complète de la plateforme
+        // Permissions d'action sur les allocations : Super Admin ne peut pas allouer / enregistrer / approuver / réconcilier (Directeur uniquement)
+        $budgetAllocationActionKeys = [
+            'budget_allocation.create',
+            'budget_allocation.record_expense',
+            'budget_allocation.approve_expense',
+            'budget_allocation.reconcile',
+        ];
+        $permissionsWithoutAllocationActions = array_filter($all, function ($p) use ($budgetAllocationActionKeys) {
+            return !in_array($p->name, $budgetAllocationActionKeys, true);
+        });
+
+        // Super Admin - Tout sauf allocation de budget
         $superAdmin = Role::firstOrCreate(
             ['name' => 'super_admin'],
-            ['description' => 'Super Administrateur - Gère la plateforme et les utilisateurs (sauf création Directeur)', 'guard_name' => 'web']
+            ['description' => 'Super Administrateur - Peut tout faire sauf allocation de budget', 'guard_name' => 'web']
         );
-        $superAdmin->syncPermissions($all);
-        echo "  ✓ Super Admin role created with full permissions\n";
+        $superAdmin->syncPermissions(array_values($permissionsWithoutAllocationActions));
+        echo "  ✓ Super Admin role created (all permissions except create/record/approve/reconcile budget allocation)\n";
 
-        // Director - Accès complet métier (pas création d'utilisateurs par défaut, mais peut modifier son compte via super_admin)
+        // Director - Accès complet métier (dont allocation de budget et gestion utilisateurs)
         $director = Role::firstOrCreate(
             ['name' => 'director'],
-            ['description' => 'Directeur - Accès complet métier', 'guard_name' => 'web']
+            ['description' => 'Directeur - Accès complet métier dont allocation de budget', 'guard_name' => 'web']
         );
         $director->syncPermissions($all);
         echo "  ✓ Director role created\n";
