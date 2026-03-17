@@ -18,7 +18,7 @@ return new class extends Migration
         });
 
         Schema::table('expenses', function (Blueprint $table) {
-            $table->dropForeign(['expenses_budget_allocation_id_foreign']);
+            $table->dropForeign(['budget_allocation_id']);
         });
         Schema::table('expenses', function (Blueprint $table) {
             $table->unsignedBigInteger('budget_allocation_id')->nullable()->change();
