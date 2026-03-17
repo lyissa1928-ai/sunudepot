@@ -65,6 +65,7 @@
                         @endforeach
                     </select>
                     @error('role')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    <small class="text-muted">Le matricule (ex. STF001, PFE01) sera généré automatiquement à la création.</small>
                 </div>
                 <div class="col-12">
                     <div class="form-check">

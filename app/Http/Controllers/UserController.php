@@ -77,6 +77,7 @@ class UserController extends Controller
         $name = trim($validated['first_name'] . ' ' . $validated['last_name']);
         $role = $validated['role'];
 
+        // Matricule généré automatiquement selon le rôle (STF001, PFE01, etc.)
         $matricule = User::generateMatriculeForRole($role);
 
         $user = User::create([
@@ -88,7 +89,6 @@ class UserController extends Controller
             'phone'      => $validated['phone'] ?? null,
             'address'    => $validated['address'] ?? null,
             'password'   => $validated['password'],
-            'address'    => $validated['address'] ?? null,
             'campus_id'  => in_array($role, ['director', 'point_focal']) ? null : ($validated['campus_id'] ?? null),
             'is_active'  => $validated['is_active'] ?? true,
             'must_change_password' => true,
@@ -96,9 +96,19 @@ class UserController extends Controller
 
         $user->syncRoles([$role]);
 
+        // Si aucun matricule n'a été généré (rôle inattendu), en attribuer un après création
+        if (empty($user->matricule)) {
+            $user->matricule = 'USR' . str_pad((string) $user->id, 4, '0', STR_PAD_LEFT);
+            $user->saveQuietly();
+        }
+
+        $message = $user->matricule
+            ? "Utilisateur créé avec succès. Matricule : {$user->matricule}."
+            : 'Utilisateur créé avec succès.';
+
         return redirect()
             ->route('users.show', $user)
-            ->with('success', 'Utilisateur créé avec succès.');
+            ->with('success', $message);
     }
 
     public function show(Request $request, User $user): View|RedirectResponse
