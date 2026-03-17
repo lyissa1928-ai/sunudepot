@@ -25,10 +25,10 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            // Composite unique: prevent duplicate line items in same order
-            $table->unique(['aggregated_order_id', 'request_item_id']);
-            $table->index(['aggregated_order_id', 'request_item_id']);
-            $table->index('request_item_id');
+            // Composite unique: prevent duplicate line items in same order (nom court pour limite MySQL 64 car.)
+            $table->unique(['aggregated_order_id', 'request_item_id'], 'agg_order_items_order_item_uniq');
+            $table->index(['aggregated_order_id', 'request_item_id'], 'agg_order_items_order_item_idx');
+            $table->index('request_item_id', 'agg_order_items_request_item_idx');
         });
     }
 
